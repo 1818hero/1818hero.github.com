@@ -3,15 +3,15 @@ description: > # this means to ignore newlines until "baseurl:"
   Write an awesome description for your new site here. You can edit this
   line in _config.yml. It will appear in your document head meta (for
   Google search results) and in your feed.xml site description.
-permalink: ':title/'
+permalink: ':categories/:title/'
 #baseurl: "/adam-blog" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 
 # Author settings add your name
-author: Victor Lee
-
+author: Li Jiangzhou
+author-name: Li Jiangzhou
 author-pic: leach-face.jpg
-about-author: Junior Developer familiar with Credit Card Account
+about-author: 菜鸡程序员，前银行业从业者
 
 #修改成你自己的
 # Contact links
@@ -61,7 +61,7 @@ plugins:
 include: [_pages]
 exclude: ["node_modules", "gulpfile.js", "package.json", "yarn.lock"]
 
-imagepath: ../
+imagepath: ../../assets/img
 
 links:
   - name:         Home
@@ -82,21 +82,36 @@ label3:  <span style="font-size:12px">Reprinted from
 
 links1:
   - name:         所有
-    url:          /blog
-    type:         recent
+    url:          /
+    type:         all
     external:     false
-  - name:         随笔
-    url:          /blogdemo/myblog/essays
+  - name:         Web技术
+    url:          /contents/web
+    type:         web
+    external:     false
+  - name:         工具技巧
+    url:          /contents/tools
+    type:         tools
+    external:     false
+  - name:         技术与商业
+    url:          /contents/business
+    type:         business
+    external:     false
+  - name:         杂谈
+    url:          /contents/essays
     type:         essays
     external:     false
-  - name:         Jekyll
-    url:          /blogdemo/myblog/jekyll
-    type:         jekyll
+  - name:         算法
+    url:          /contents/algorithm
+    type:         algorithm
     external:     false
 
-blog_1:    recent
-blog_2:    essays
-blog_3:    jekyll
+blog_0:    all
+blog_1:    spring
+blog_2:    tools
+blog_3:    business
+blog_4:    essays
+blog_5:    algorithm
 
 
 
