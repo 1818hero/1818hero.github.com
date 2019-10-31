@@ -25,7 +25,7 @@ pinterest: # Add your Pinterest handle
 #修改成你自己的
 email:
 phone:
-github:
+github: https://github.com/no-waste/
 jianshu:
 juejin:
 csdn:
@@ -76,9 +76,9 @@ links:
 #2：在_includes里面headr.html中添加对应内容
 #3：在根目录blog文件中创建对应内容
 
-label1: <span style="font-size:12px">Publish by
-label2:  </span>
-label3:  <span style="font-size:12px">Reprinted from
+publish:  <span style="font-size:12px">作者：
+photo:   <span style="font-size:12px">封面：
+tail:  </span><br>
 
 links1:
   - name:         所有
