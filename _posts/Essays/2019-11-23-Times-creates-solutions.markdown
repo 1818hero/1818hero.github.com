@@ -5,7 +5,7 @@ title: 每个时代都有自己的解决方案
 date:  2019-10-30 22:30:00 +0800
 description:  
 img: Sunset-in-Office.jpg # Add image post (optional)
-tags: [职业规划，杂谈]
+tags: [杂谈]
 author: LiJiangzhou # Add name author (optional)
 category: essays
 
