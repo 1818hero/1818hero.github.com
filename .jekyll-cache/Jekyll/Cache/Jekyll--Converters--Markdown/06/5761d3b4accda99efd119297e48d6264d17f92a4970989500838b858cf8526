@@ -1,0 +1,164 @@
+I"s<p><span style="font-size:12px">作者： <a href="https://1818hero.github.io/about/" target="\_blank">LiJiangzhou</a> </span><br />
+<span style="font-size:12px">封面： 泰国·皮皮岛 </span><br /></p>
+
+<p>EMQ X本身支持基于Erlang的<a href="https://docs.emqx.io/tutorial/v3/cn/cluster/setup_start.html">集群配置</a>，且非常容易搭建。为了支持容器化的集群配置和操作，现将通过Docker Swarm部署集群的步骤记录如下。</p>
+
+<h4 id="部署环境">部署环境</h4>
+<p>host 1：192.168.1.4<br />
+host 2：192.168.1.44<br />
+两台机器上docker、docker-compose已安装完成</p>
+
+<h4 id="部署目标">部署目标</h4>
+<p>host1为manager节点，运行一个EMQX服务（实际情况下，Manager节点最好不要运行服务），host2为worker节点，运行两个EMQX服务。三个服务（容器）共同组成一个EMQ X集群。</p>
+
+<h3 id="1创建docker-swarm集群">1、创建Docker Swarm集群</h3>
+
+<p>在host1上创建集群，并将host1作为manager节点</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker init swarm --advertise-addr 192.168.1.4
+</code></pre></div></div>
+<p>执行完成后会提示加入集群的token，复制记录下来</p>
+
+<p>将host2加入集群，在host2上执行</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker swarm join --token xxx
+</code></pre></div></div>
+<p>其中，xxx表示token值</p>
+
+<h3 id="2在两个节点上获取emq-x镜像">2、在两个节点上获取emq x镜像</h3>
+<p>分别在两个节点上获取镜像：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker pull emqx/emqx
+</code></pre></div></div>
+
+<h3 id="3编写docker-compose文件并放到homeemqx-cluster目录下">3、编写docker-compose文件，并放到/home/emqx-cluster目录下</h3>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>version: '3.7'
+
+services:
+  emq-01:
+    image: emqx/emqx                 # 镜像名称，默认使用latest镜像。
+    hostname: emqx                     # 为保持集群各点配置名称一致，hostname统一称为emqx
+    ports:                                      # 端口映射关系：需保证每个节点映射的端口值不同
+      - "1883:1883"
+      - "8083:8083"
+      - "8883:8883"
+      - "8084:8084"
+      - "18083:18083"
+    volumes:                           # 在宿主机对应位置映射配置文件
+      - /home/emqx-cluster/emqx.conf:/opt/emqx/etc/emqx.conf
+    #configs:
+    #  - source: emqx-config
+    #    target: /opt/emqx/etc/emqx.conf
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.hostname == yitiji02.novalocal   # 这里的hostname等于swarm节点名称
+      restart_policy:
+        condition: on-failure
+    networks:
+      emq-net:
+        ipv4_address: 172.16.237.243              # 分配的节点IP，可能不生效
+
+  emq-02:
+    image: emqx/emqx
+    hostname: emqx
+    ports:
+      - "1783:1883"
+      - "7983:8083"
+      - "8783:8883"
+      - "7984:8084"
+      - "17083:18083"
+    #configs:
+    #  - source: emqx-config
+    #    target: /opt/emqx/etc/emqx.conf
+    volumes:
+      - /home/emqx-cluster/emqx.conf:/opt/emqx/etc/emqx.conf
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.hostname == yitiji42.novalocal
+          # - node.hostname == Yitiji51
+      restart_policy:
+        condition: on-failure
+    networks:
+      emq-net:
+        ipv4_address: 172.16.237.246
+
+  emq-03:
+    image: emqx/emqx
+    hostname: emqx
+    ports:
+      - "1983:1883"
+      - "8183:8083"
+      - "8983:8883"
+      - "8184:8084"
+      - "19083:18083"
+    #configs:
+    #  - source: emqx-config
+    #    target: /opt/emqx/etc/emqx.conf
+    volumes:
+      - /home/emqx-cluster/emqx.conf:/opt/emqx/etc/emqx.conf
+    deploy:
+      mode: global
+      placement:
+        constraints:
+          - node.hostname == yitiji42.novalocal
+          # - node.hostname == Yitiji51
+      restart_policy:
+        condition: on-failure
+    networks:
+      emq-net:
+        ipv4_address: 172.16.237.249
+
+networks:
+  emq-net:                                                 # 创建的docker网络名称
+    driver: overlay                                       # 网络类型为overlay网络
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.16.237.240/28"          # 子网的网络号，各服务IP从该网络中分配
+
+# configs:
+#   emqx-config:
+#     file: /home/emqx-cluster/emqx.conf
+
+
+</code></pre></div></div>
+<p>然后将该文件放到/home/emqx-cluster目录下</p>
+
+<h3 id="4修改emqxconf文件并将该文件放到homeemqx-cluster目录下">4、修改emqx.conf文件，并将该文件放到/home/emqx-cluster目录下</h3>
+
+<p>emqx.conf文件可以通过运行单节点emqx服务获取。可直接<a href="https://docs.emqx.io/broker/v3/cn/install.html#docker">docker run运行</a>后，在容器中/opt/emqx/etc目录下获得文件。</p>
+
+<p>这里我们使用静态IP的方式<a href="https://docs.emqx.io/tutorial/v3/cn/cluster/setup_start.html">配置集群</a>。原因是dns，etcd，k8s三种方式均需要额外部署服务，相对比较复杂。组播方式虽然简单，但应用在容器网络时，组播报文似乎无法传递，导致集群生成失败。因此在节点数目要求不多的情况下，使用静态IP的方式性价比较高。</p>
+
+<p>得到emqx.conf文件后，需进行修改。</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>...
+cluster.discovery = static
+...
+cluster.static.seeds = emqx@172.16.237.241,emqx@172.16.237.242,emqx@172.16.237.243,emqx@172.16.237.244,emqx@172.16.237.245,emqx@172.16.237.246,emqx@172.16.237.247,emqx@172.16.237.248,emqx@172.16.237.249,emqx@172.16.237.250,emqx@172.16.237.251,emqx@172.16.237.252,emqx@172.16.237.253,emqx@172.16.237.254,emqx@172.16.237.255
+
+</code></pre></div></div>
+<p>将该文件修改完成并放到/home/emqx-cluster目录下后，修改emqx-cluster目录及所属文件的权限为rwx权限。</p>
+
+<h3 id="5启动服务">5、启动服务</h3>
+
+<p>在/home/emqx-cluster目录下，运行docker stack命令启动服务。</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>docker stack deploy -c  docker-compose.yml emqx-cluster
+</code></pre></div></div>
+
+<p>运行成功后，可以在Manager Node通过docker service ls命令查看集群运行状态。若REPLICAS均显示为1/1，则说明服务运行成功。在各个节点使用docker ps命令可查看相应容器的运行状态。</p>
+
+<p>如果集群启动，但无法访问容器，可通过docker logs命令查看容器状态</p>
+
+<p>打开浏览器访问节点的dashboard，查看节点列表为3个节点，说明集群组建完成。</p>
+
+<hr />
+
+<h2 id="问题排查记录">问题排查记录</h2>
+<p>1、docker stack 启动失败，可能是因为yml文件的格式有误，要注意冒号后必须有空格才是KV值，并且缩进为两个空格。</p>
+
+<p>2、若docker stack启动时提示镜像版本不一致错误，可能是因为正在pull镜像或是已经有服务运行。对应的解决方式是停止pull镜像，rm掉已经运行的emqx服务。</p>
+
+<p>3、通过docker stack启动后，若发现服务未启动（REPLICAS显示0/1），可以通过docker stack ps emqx-cluster查看报错信息，也可以通过docker service logs + 服务Id查看各服务的日志信息。</p>
+:ET

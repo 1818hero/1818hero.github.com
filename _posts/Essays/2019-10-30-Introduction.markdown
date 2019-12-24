@@ -5,12 +5,12 @@ title: 工作和换工作
 date:  2019-10-30 22:30:00 +0800
 description:  
 img: Introduction.jpg # Add image post (optional)
-tags: [职业规划，杂谈]
+tags: [职业规划, 杂谈]
 author: LiJiangzhou # Add name author (optional)
 category: essays
 
 ---
-{{site.publish}} <a href="https://no-waste.github.io/about/" target="\_blank">LiJiangzhou</a> {{site.tail}}
+{{site.publish}} <a href="https://1818hero.github.io/about/" target="\_blank">LiJiangzhou</a> {{site.tail}}
 {{site.photo}} 上海浦东 {{site.tail}}
 
 2019年10月25日，我从某股份制银行离职，从毕业到离职共计18个月。

@@ -1,4 +1,4 @@
-title: Blog - No Waste
+title: Blog - Hardhero
 description: > # this means to ignore newlines until "baseurl:"
   Write an awesome description for your new site here. You can edit this
   line in _config.yml. It will appear in your document head meta (for
@@ -25,7 +25,7 @@ pinterest: # Add your Pinterest handle
 #修改成你自己的
 email:
 phone:
-github: https://github.com/no-waste/
+github: https://github.com/1818hero/
 jianshu:
 juejin:
 csdn:
@@ -65,7 +65,7 @@ imagepath: ../../assets/img
 
 links:
   - name:         Home
-    url:          https://no-waste.github.com
+    url:          /
     external:     false
   - name:         About
     url:          /about
@@ -85,33 +85,19 @@ links1:
     url:          /
     type:         all
     external:     false
-  - name:         Web技术
-    url:          /contents/web
-    type:         web
-    external:     false
-  - name:         工具技巧
-    url:          /contents/tools
-    type:         tools
-    external:     false
-  - name:         技术与商业
-    url:          /contents/business
-    type:         business
+  - name:         技术
+    url:          /contents/tech
+    type:         tech
     external:     false
   - name:         杂谈
     url:          /contents/essays
     type:         essays
     external:     false
-  - name:         算法
-    url:          /contents/algorithm
-    type:         algorithm
-    external:     false
+
 
 blog_0:    all
-blog_1:    spring
-blog_2:    tools
-blog_3:    business
-blog_4:    essays
-blog_5:    algorithm
+blog_1:    tech
+blog_2:    essays
 
 
 

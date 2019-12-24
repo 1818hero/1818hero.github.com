@@ -4,7 +4,7 @@ layout: home-page
 {% assign count = 0 %}
 <ol class="post-card-box clearfix">
   {% for post in site.posts %}
-  {% if post.categories[0] == site.blog_4 %}
+  {% if post.categories[0] == site.blog_2 %}
 	  <li>
 		<div class="post-card">
 		  <a href="{{post.url | prepend: site.baseurl}}" class="post-card-image" style="background-image: url( {{ "/assets/img/" | prepend: site.baseurl | append : post.img}} )">
